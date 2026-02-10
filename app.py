@@ -20,14 +20,17 @@ def back():
 
 	This view is used to add, edit and remove order numbers.
 	"""
-	# TEMP: reset orders on refresh.
-	pending_orders.clear()
 
 	return render_template('back.html')
 
 
+@app.get('/list')
+def list_orders():
+	return { 'pending_orders': pending_orders }
+
+
 @app.post('/add')
-def add():
+def add_order():
 	json = request.json
 	new_order = int(json['order'])
 	pending_orders.append(new_order)

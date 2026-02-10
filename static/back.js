@@ -2,7 +2,31 @@ let pendingOrders = [];
 
 let nextOrder = 0;
 
-// Add new order and refresh list of pending orders.
+/** Redraws visual of pending orders. */
+function redrawPendingOrders() {
+	const orders_element = document.getElementById('pending-orders');
+	// Clear list.
+	orders_element.textContent = '';
+	// Repopulate list.
+	for (let order of pendingOrders) {
+		const order_element = document.createElement('li');
+		order_element.textContent = order;
+		orders_element.appendChild(order_element);
+	}
+}
+
+// Redraw pending orders on load.
+window.addEventListener('load', () => {
+	window.fetch('/list')
+	.then(response => response.json())
+	.then(json => {
+		pendingOrders = json['pending_orders'];
+		redrawPendingOrders();
+	})
+	.catch(error => console.error(error));
+});
+
+// Button to add new order and refresh list of pending orders.
 const button = document.getElementById('add');
 button.addEventListener('click', () => {
 	window.fetch('/add', {
@@ -14,15 +38,8 @@ button.addEventListener('click', () => {
 	})
 	.then(response => response.json())
 	.then(json => {
-		// Refresh list of pending orders.
-		const orders_element = document.getElementById('pending-orders');
-		orders_element.textContent = '';
 		pendingOrders = json['pending_orders'];
-		for (let order of pendingOrders) {
-			const order_element = document.createElement('li');
-			order_element.textContent = order;
-			orders_element.appendChild(order_element);
-		}
+		redrawPendingOrders();
 	})
 	.catch(error => console.error(error));
 });
