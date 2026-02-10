@@ -1,6 +1,8 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
+
+pending_orders: list[int] = []
 
 
 @app.route('/front')
@@ -18,4 +20,15 @@ def back():
 
 	This view is used to add, edit and remove order numbers.
 	"""
+	# TEMP: reset orders on refresh.
+	pending_orders.clear()
+
 	return render_template('back.html')
+
+
+@app.post('/add')
+def add():
+	json = request.json
+	new_order = int(json['order'])
+	pending_orders.append(new_order)
+	return { 'pending_orders': pending_orders }

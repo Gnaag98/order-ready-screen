@@ -4,8 +4,15 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Back</title>
+
+	<script type="module" src="{{ url_for('static', filename='back.js') }}"></script>
 </head>
 <body>
 	<h1>Back</h1>
+
+	<button id="add" type="button">Add</button>
+
+	<h2>Pending</h2>
+	<ul id="pending-orders"></ul>
 </body>
 </html>
