@@ -1,6 +1,6 @@
 let pendingOrders = [];
 
-let nextOrder = 0;
+let nextAvailableNumber = 0;
 
 /** Redraws visual of pending orders. */
 function redrawPendingOrders() {
@@ -15,13 +15,19 @@ function redrawPendingOrders() {
 	}
 }
 
+/** Handes response of adding/listing orders. */
+function handleResponse(json) {
+	pendingOrders = json['pending_orders'];
+	nextAvailableNumber = json['next_available_number'];
+	redrawPendingOrders();
+}
+
 // Redraw pending orders on load.
 window.addEventListener('load', () => {
 	window.fetch('/list')
 	.then(response => response.json())
 	.then(json => {
-		pendingOrders = json['pending_orders'];
-		redrawPendingOrders();
+		handleResponse(json);
 	})
 	.catch(error => console.error(error));
 });
@@ -34,12 +40,11 @@ button.addEventListener('click', () => {
 		headers: {
 			'Content-Type': 'application/json'
 		},
-		body: JSON.stringify({ 'order': nextOrder++ })
+		body: JSON.stringify({ 'order': nextAvailableNumber++ })
 	})
 	.then(response => response.json())
 	.then(json => {
-		pendingOrders = json['pending_orders'];
-		redrawPendingOrders();
+		handleResponse(json);
 	})
 	.catch(error => console.error(error));
 });
