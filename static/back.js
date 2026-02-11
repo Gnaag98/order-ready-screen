@@ -1,25 +1,14 @@
+import { redrawPendingOrders } from './common.js'
+
 let pendingOrders = [];
 
 let nextAvailableNumber = 0;
 
-/** Redraws visual of pending orders. */
-function redrawPendingOrders() {
-	const orders_element = document.getElementById('pending-orders');
-	// Clear list.
-	orders_element.textContent = '';
-	// Repopulate list.
-	for (let order of pendingOrders) {
-		const order_element = document.createElement('li');
-		order_element.textContent = order;
-		orders_element.appendChild(order_element);
-	}
-}
-
-/** Handes response of adding/listing orders. */
+/** Redraws returned orders and sets the next order number. */
 function handleResponse(json) {
 	pendingOrders = json['pending_orders'];
 	nextAvailableNumber = json['next_available_number'];
-	redrawPendingOrders();
+	redrawPendingOrders(pendingOrders);
 }
 
 // Redraw pending orders on load.
