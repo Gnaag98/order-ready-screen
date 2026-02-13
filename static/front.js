@@ -1,11 +1,13 @@
-import { redrawPendingOrders } from './common.js'
+import { redrawPendingOrders, redrawCompletedOrders } from './common.js'
 
 let pendingOrders = [];
 
 /** Redraws returned orders. */
 function handleResponse(json) {
 	pendingOrders = json['pending_orders'];
+	completedOrders = json['completed_orders'];
 	redrawPendingOrders(pendingOrders);
+	redrawCompletedOrders(completedOrders);
 }
 
 /** Fetches list of orders. */

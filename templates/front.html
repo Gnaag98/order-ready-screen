@@ -7,7 +7,7 @@
 
 	<script type="module" src="{{ url_for('static', filename='front.js') }}"></script>
 
-	<template id="pending-order">
+	<template id="order">
 		<li>
 			<span class="order"></span>
 		</li>
@@ -16,7 +16,13 @@
 <body>
 	<h1>Front</h1>
 
-	<h2>Pending</h2>
-	<ul id="pending-orders"></ul>
+	<section>
+		<h2>Pending</h2>
+		<ul id="pending-orders"></ul>
+	</section>
+	<section>
+		<h2>Ready</h2>
+		<ul id="completed-orders"></ul>
+	</section>
 </body>
 </html>

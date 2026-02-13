@@ -2,17 +2,17 @@ from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
-pending_orders: list[int] = []
-last_added_order: int | None = None
+# Order IDs are used as keys to allow for duplicate order numbers.
+pending_orders: dict[int, int] = {}
+completed_orders: dict[int, int] = {}
+next_available_order_id: int = 0
 
 
 def get_order_response():
 	"""Common response to adding/listing orders."""
-	next_available_number = (
-		last_added_order + 1 if last_added_order is not None else 0)
 	return {
 		'pending_orders': pending_orders,
-		'next_available_number': next_available_number
+		'completed_orders': completed_orders
 	}
 
 
@@ -41,10 +41,9 @@ def list_orders():
 
 @app.post('/add')
 def add_order():
-	print(request.json)
-	new_order = int(request.json['order'])
-	# TODO: Validate new order.
-	pending_orders.append(new_order)
-	global last_added_order
-	last_added_order = new_order
+	global next_available_order_id
+	order_id = next_available_order_id
+	next_available_order_id += 1
+	order_number = int(request.json['order'])
+	pending_orders[order_id] = order_number
 	return get_order_response()
