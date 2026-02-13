@@ -19,8 +19,8 @@ function redrawOrders(orders, order_status) {
 		const order_clone = document.importNode(order_template.content, true);
 		const order_element = order_clone.querySelector('.order');
 		order_element.dataset.id = id;
+		order_element.dataset.status = order_status;
 		order_element.textContent = number;
-		order_element.classList.add(`${order_status}`);
 		orders_element.appendChild(order_clone);
 	}
 }
