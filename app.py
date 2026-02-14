@@ -2,14 +2,20 @@ from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
-HTTP_STATUS_RESET_CONTENT = 205
-""" Prompts the client to refresh the page or fetch new data. """
 HTTP_STATUS_NOT_FOUND = 404
 
 # Order IDs are used as keys to allow for duplicate order numbers.
 pending_orders: dict[int, int] = {}
 completed_orders: dict[int, int] = {}
 next_available_order_id: int = 0
+
+
+def get_common_response():
+	"""Returns both pending and completed orders."""
+	return {
+		'pending_orders': pending_orders,
+		'completed_orders': completed_orders
+	}
 
 
 @app.route('/front')
@@ -33,10 +39,7 @@ def back():
 @app.get('/list')
 def list_orders():
 	"""Returns a list of pending and completed orders."""
-	return {
-		'pending_orders': pending_orders,
-		'completed_orders': completed_orders
-	}
+	return get_common_response()
 
 
 @app.post('/add')
@@ -47,7 +50,7 @@ def add_order():
 	next_available_order_id += 1
 	order_number = int(request.json['order_number'])
 	pending_orders[order_id] = order_number
-	return '', HTTP_STATUS_RESET_CONTENT
+	return get_common_response()
 
 
 @app.post('/complete')
@@ -58,7 +61,7 @@ def complete_order():
 		order_number = pending_orders[order_id]
 		del pending_orders[order_id]
 		completed_orders[order_id] = order_number
-		return '', HTTP_STATUS_RESET_CONTENT
+		return get_common_response()
 	else:
 		return (
 			f'No pending order with id {order_id} found',
@@ -73,7 +76,7 @@ def redo_order():
 		order_number = completed_orders[order_id]
 		del completed_orders[order_id]
 		pending_orders[order_id] = order_number
-		return '', HTTP_STATUS_RESET_CONTENT
+		return get_common_response()
 	else:
 		return (
 			f'No completed order with id {order_id} found',

@@ -1,7 +1,7 @@
 import { redrawPendingOrders, redrawCompletedOrders } from './common.js'
 
 const HttpStatus = {
-	RESET_CONTENT: 205,
+	OK: 200,
 	NOT_FOUND: 404
 }
 
@@ -24,8 +24,8 @@ function setNextAvailableOrderNumber(pendingOrders, completedOrders) {
 	});
 }
 
-/** Fetches orders from the servers. */
-function fetchOrders() {
+/** Fetches all orders from the servers. */
+function getOrders() {
 	window.fetch('/list')
 	.then(response => response.json())
 	.then(json => {
@@ -47,15 +47,15 @@ function addOrder() {
 	})
 	.then(response => {
 		switch (response.status) {
-		case HttpStatus.RESET_CONTENT:
-			fetchOrders();
-			break;
+		case HttpStatus.OK:
+			return response.json();
 		default:
 			throw new Error(
 				`Status ${response.status} not implemented for ${url}`
 			);
 		}
 	})
+	.then(json => handleResponse(json))
 	.catch(error => console.error(error));
 }
 
@@ -69,9 +69,8 @@ function completeOrder(orderId) {
 	})
 	.then(response => {
 		switch (response.status) {
-		case HttpStatus.RESET_CONTENT:
-			fetchOrders();
-			break;
+		case HttpStatus.OK:
+			return response.json();
 		case HttpStatus.NOT_FOUND:
 			throw new Error(
 				`Server found no order with id ${orderId} to complete`
@@ -82,6 +81,7 @@ function completeOrder(orderId) {
 			);
 		}
 	})
+	.then(json => handleResponse(json))
 	.catch(error => console.error(error));
 }
 
@@ -95,9 +95,8 @@ function redoOrder(orderId) {
 	})
 	.then(response => {
 		switch (response.status) {
-		case HttpStatus.RESET_CONTENT:
-			fetchOrders();
-			break;
+		case HttpStatus.OK:
+			return response.json();
 		case HttpStatus.NOT_FOUND:
 			throw new Error(
 				`Server found no order with id ${orderId} to redo`
@@ -108,6 +107,7 @@ function redoOrder(orderId) {
 			);
 		}
 	})
+	.then(json => handleResponse(json))
 	.catch(error => console.error(error));
 }
 
@@ -144,7 +144,7 @@ function makeOrdersInteractive() {
 
 // Redraw pending orders on load.
 window.addEventListener('load', () => {
-	fetchOrders();
+	getOrders();
 });
 
 // Button to add new order and refresh list of pending orders.
