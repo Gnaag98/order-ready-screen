@@ -85,6 +85,32 @@ function completeOrder(orderId) {
 	.catch(error => console.error(error));
 }
 
+/** Changes the status of an order from completed back to pending. */
+function redoOrder(orderId) {
+	const url = '/redo';
+	window.fetch(url, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ 'order_id': orderId })
+	})
+	.then(response => {
+		switch (response.status) {
+		case HttpStatus.RESET_CONTENT:
+			fetchOrders();
+			break;
+		case HttpStatus.NOT_FOUND:
+			throw new Error(
+				`Server found no order with id ${orderId} to redo`
+			);
+		default:
+			throw new Error(
+				`Status ${response.status} not implemented for ${url}.`
+			);
+		}
+	})
+	.catch(error => console.error(error));
+}
+
 /** Redraws returned orders and sets the next order number. */
 function handleResponse(json) {
 	const pendingOrders = json['pending_orders'];
@@ -103,6 +129,15 @@ function makeOrdersInteractive() {
 		orderElement.addEventListener('click', () => {
 			const orderId = Number(orderElement.dataset.id);
 			completeOrder(orderId);
+		});
+	}
+	const completedOrderElements = document.querySelectorAll(
+		'.order[data-status=completed]'
+	);
+	for (const orderElement of completedOrderElements) {
+		orderElement.addEventListener('click', () => {
+			const orderId = Number(orderElement.dataset.id);
+			redoOrder(orderId);
 		});
 	}
 }

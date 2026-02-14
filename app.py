@@ -63,3 +63,18 @@ def complete_order():
 		return (
 			f'No pending order with id {order_id} found',
 			HTTP_STATUS_NOT_FOUND)
+
+
+@app.post('/redo')
+def redo_order():
+	"""Moves the order with matching id from completed to pending."""
+	order_id = int(request.json['order_id'])
+	if order_id in completed_orders:
+		order_number = completed_orders[order_id]
+		del completed_orders[order_id]
+		pending_orders[order_id] = order_number
+		return '', HTTP_STATUS_RESET_CONTENT
+	else:
+		return (
+			f'No completed order with id {order_id} found',
+			HTTP_STATUS_NOT_FOUND)
