@@ -8,34 +8,10 @@ const HttpStatus = {
 
 let nextAvailableOrderNumber = 0;
 
-/** Sets the next available order number to one higher than the latest order. */
-function setNextAvailableOrderNumber(pendingOrders, completedOrders) {
-	const orderIds = [
-		...Object.keys(pendingOrders), ...Object.keys(completedOrders)
-	];
-	const orderNumbers = [
-		...Object.values(pendingOrders), ...Object.values(completedOrders)
-	];
-	let currentHighestId = -1;
-	orderIds.forEach((id, index) => {
-		if (id > currentHighestId) {
-			nextAvailableOrderNumber = orderNumbers[index] + 1;
-			currentHighestId = id;
-		}
-	});
-}
-
 /** Fetches all orders from the servers. */
 function getOrders() {
 	window.fetch('/orders')
-	.then(response => response.json())
-	.then(json => {
-		handleResponse(json);
-		const pendingOrders = json['pending_orders'];
-		const completedOrders = json['completed_orders'];
-		// Move this to onload.
-		setNextAvailableOrderNumber(pendingOrders, completedOrders);
-	})
+	.then(response => handleResponse(response))
 	.catch(error => console.error(error));
 }
 
@@ -51,7 +27,7 @@ function addOrder() {
 	.then(response => {
 		switch (response.status) {
 		case HttpStatus.OK:
-			return response.json().then(json => handleResponse(json));
+			return handleResponse(response);
 		default:
 			throw new Error(
 				`Status ${response.status} not implemented for ${method} ${url}`
@@ -61,7 +37,9 @@ function addOrder() {
 	.catch(error => console.error(error));
 }
 
-/** Complete pending order. */
+/** Complete pending order.
+ * @param {Number} orderId
+ */
 function completeOrder(orderId) {
 	const url = '/complete';
 	const method = 'POST';
@@ -73,7 +51,7 @@ function completeOrder(orderId) {
 	.then(response => {
 		switch (response.status) {
 		case HttpStatus.OK:
-			return response.json().then(json => handleResponse(json));
+			return handleResponse(response);
 		case HttpStatus.NOT_FOUND:
 			throw new Error(
 				`Server found no order with id ${orderId} to complete`
@@ -87,7 +65,9 @@ function completeOrder(orderId) {
 	.catch(error => console.error(error));
 }
 
-/** Changes the status of an order from completed back to pending. */
+/** Changes the status of an order from completed back to pending.
+ * @param {Number} orderId
+ */
 function redoOrder(orderId) {
 	const url = '/redo';
 	const method = 'POST';
@@ -99,7 +79,7 @@ function redoOrder(orderId) {
 	.then(response => {
 		switch (response.status) {
 		case HttpStatus.OK:
-			return response.json().then(json => handleResponse(json));
+			return handleResponse(response);
 		case HttpStatus.NOT_FOUND:
 			throw new Error(
 				`Server found no order with id ${orderId} to redo`
@@ -121,7 +101,7 @@ function removeCompletedOrders() {
 	.then(response => {
 		switch (response.status) {
 		case HttpStatus.OK:
-			return response.json().then(json => handleResponse(json));
+			return handleResponse(response);
 			case HttpStatus.NO_CONTENT:
 			// Do nothing since nothing was removed.
 			break;
@@ -134,13 +114,19 @@ function removeCompletedOrders() {
 	.catch(error => console.error(error));
 }
 
-/** Redraws returned orders and sets the next order number. */
-function handleResponse(json) {
-	const pendingOrders = json['pending_orders'];
-	const completedOrders = json['completed_orders'];
-	redrawPendingOrders(pendingOrders);
-	redrawCompletedOrders(completedOrders);
-	makeOrdersInteractive();
+/** Redraws returned orders and sets the next order number.
+ * @param {Response} response - HTTP response.
+ * @returns {Promise<void>}
+ */
+function handleResponse(response) {
+	return response.json()
+	.then(json => {
+		const pendingOrders = json['pending_orders'];
+		const completedOrders = json['completed_orders'];
+		redrawPendingOrders(pendingOrders);
+		redrawCompletedOrders(completedOrders);
+		makeOrdersInteractive();
+	});
 }
 
 /** Adds the ability to click on an order to change its status. */
@@ -165,9 +151,24 @@ function makeOrdersInteractive() {
 	}
 }
 
-// Redraw pending orders on load.
+/** Sets the next available order number to one higher than the latest order. */
+function setNextAvailableOrderNumber() {
+	const orderElements = document.querySelectorAll('.order');
+	let currentHighestId = -1;
+	for (const orderElement of orderElements) {
+		const id = orderElement.dataset.id;
+		const orderNumber = Number(orderElement.textContent);
+		if (id > currentHighestId) {
+			nextAvailableOrderNumber = orderNumber + 1;
+			currentHighestId = id;
+		}
+	}
+}
+
+// Initialize orders on load.
 window.addEventListener('load', () => {
 	getOrders();
+	setNextAvailableOrderNumber();
 });
 
 // Enable adding a new pending order.

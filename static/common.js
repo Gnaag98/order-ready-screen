@@ -1,14 +1,21 @@
-/** Redraws visual of pending orders. */
+/** Redraws visual of pending orders.
+ * @param {Object.<number, number>} pendingOrders - keys: order ids, values: order numbers.
+ */
 export function redrawPendingOrders(pendingOrders) {
 	redrawOrders(pendingOrders, 'pending');
 }
 
-/** Redraws visual of completed orders. */
+/** Redraws visual of completed orders.
+ * @param {Object.<number, number>} completedOrders - keys: order ids, values: order numbers.
+ */
 export function redrawCompletedOrders(completedOrders) {
 	redrawOrders(completedOrders, 'completed');
 }
 
-/** Redraws visual of either pending or completed orders. */
+/** Redraws visual of either pending or completed orders.
+ * @param {Object.<number, number>} orders - either pending or completed orders.
+ * @param {string} order_status - either 'pending' or 'completed'.
+ */
 function redrawOrders(orders, order_status) {
 	const orders_element = document.querySelector(`#${order_status}-orders`);
 	const order_template = document.querySelector('#order');
