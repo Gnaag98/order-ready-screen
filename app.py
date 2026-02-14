@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
+HTTP_STATUS_NO_CONTENT = 204
 HTTP_STATUS_NOT_FOUND = 404
 
 # Order IDs are used as keys to allow for duplicate order numbers.
@@ -36,10 +37,21 @@ def back():
 	return render_template('back.html')
 
 
-@app.get('/list')
-def list_orders():
+@app.get('/orders')
+def get_orders():
 	"""Returns a list of pending and completed orders."""
 	return get_common_response()
+
+
+@app.delete('/completed-orders')
+def remove_completed_orders():
+	"""Removes all completed orders."""
+	if completed_orders:
+		completed_orders.clear()
+		return get_common_response()
+	else:
+		# No action needed by the client since nothing was removed.
+		return '', HTTP_STATUS_NO_CONTENT
 
 
 @app.post('/add')

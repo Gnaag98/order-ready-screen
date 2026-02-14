@@ -10,7 +10,7 @@ function handleResponse(json) {
 
 /** Fetches list of orders. */
 function list() {
-	window.fetch('/list')
+	window.fetch('/orders')
 	.then(response => response.json())
 	.then(json => {
 		handleResponse(json);

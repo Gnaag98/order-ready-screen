@@ -2,6 +2,7 @@ import { redrawPendingOrders, redrawCompletedOrders } from './common.js'
 
 const HttpStatus = {
 	OK: 200,
+	NO_CONTENT: 204,
 	NOT_FOUND: 404
 }
 
@@ -26,12 +27,13 @@ function setNextAvailableOrderNumber(pendingOrders, completedOrders) {
 
 /** Fetches all orders from the servers. */
 function getOrders() {
-	window.fetch('/list')
+	window.fetch('/orders')
 	.then(response => response.json())
 	.then(json => {
 		handleResponse(json);
 		const pendingOrders = json['pending_orders'];
 		const completedOrders = json['completed_orders'];
+		// Move this to onload.
 		setNextAvailableOrderNumber(pendingOrders, completedOrders);
 	})
 	.catch(error => console.error(error));
@@ -40,6 +42,7 @@ function getOrders() {
 /** Add pending order. */
 function addOrder() {
 	const url = '/add';
+	const method = 'POST';
 	window.fetch(url, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
@@ -48,66 +51,86 @@ function addOrder() {
 	.then(response => {
 		switch (response.status) {
 		case HttpStatus.OK:
-			return response.json();
+			return response.json().then(json => handleResponse(json));
 		default:
 			throw new Error(
-				`Status ${response.status} not implemented for ${url}`
+				`Status ${response.status} not implemented for ${method} ${url}`
 			);
 		}
 	})
-	.then(json => handleResponse(json))
 	.catch(error => console.error(error));
 }
 
 /** Complete pending order. */
 function completeOrder(orderId) {
 	const url = '/complete';
+	const method = 'POST';
 	window.fetch(url, {
-		method: 'POST',
+		method: method,
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ 'order_id': orderId })
 	})
 	.then(response => {
 		switch (response.status) {
 		case HttpStatus.OK:
-			return response.json();
+			return response.json().then(json => handleResponse(json));
 		case HttpStatus.NOT_FOUND:
 			throw new Error(
 				`Server found no order with id ${orderId} to complete`
 			);
 		default:
 			throw new Error(
-				`Status ${response.status} not implemented for ${url}`
+				`Status ${response.status} not implemented for ${method} ${url}`
 			);
 		}
 	})
-	.then(json => handleResponse(json))
 	.catch(error => console.error(error));
 }
 
 /** Changes the status of an order from completed back to pending. */
 function redoOrder(orderId) {
 	const url = '/redo';
+	const method = 'POST';
 	window.fetch(url, {
-		method: 'POST',
+		method: method,
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ 'order_id': orderId })
 	})
 	.then(response => {
 		switch (response.status) {
 		case HttpStatus.OK:
-			return response.json();
+			return response.json().then(json => handleResponse(json));
 		case HttpStatus.NOT_FOUND:
 			throw new Error(
 				`Server found no order with id ${orderId} to redo`
 			);
 		default:
 			throw new Error(
-				`Status ${response.status} not implemented for ${url}.`
+				`Status ${response.status} not implemented for ${method} ${url}`
 			);
 		}
 	})
-	.then(json => handleResponse(json))
+	.catch(error => console.error(error));
+}
+
+/** Removes all completed orders. */
+function removeCompletedOrders() {
+	const url = '/completed-orders'
+	const method = 'DELETE';
+	window.fetch(url, { method: method })
+	.then(response => {
+		switch (response.status) {
+		case HttpStatus.OK:
+			return response.json().then(json => handleResponse(json));
+			case HttpStatus.NO_CONTENT:
+			// Do nothing since nothing was removed.
+			break;
+		default:
+			throw new Error(
+				`Status ${response.status} not implemented for ${method} ${url}`
+			);
+		}
+	})
 	.catch(error => console.error(error));
 }
 
@@ -147,8 +170,12 @@ window.addEventListener('load', () => {
 	getOrders();
 });
 
-// Button to add new order and refresh list of pending orders.
-const button = document.getElementById('add');
-button.addEventListener('click', () => {
+// Enable adding a new pending order.
+document.querySelector('#add').addEventListener('click', () => {
 	addOrder();
+});
+
+// Enable removing all completed orders.
+document.querySelector('#remove-completed').addEventListener('click', () => {
+	removeCompletedOrders();
 });
