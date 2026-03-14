@@ -16,9 +16,10 @@ async function getOrders() {
 	await handleResponse(response);
 }
 
-/** Add pending order and increment the next order number. */
-async function addOrder() {
-	const orderNumber = nextOrderNumber.get_and_increment();
+/** Add pending order.
+ * @param {Number} orderNumber
+ */
+async function addOrder(orderNumber) {
 	const url = '/add';
 	const method = 'POST';
 	const response = await window.fetch(url, {
@@ -142,13 +143,31 @@ function makeOrdersInteractive() {
 	}
 }
 
+/** Initialize keypad. */
+function initializeKeypad() {
+	// Initialize digit buttons.
+	for (const button of document.querySelectorAll('.keypad .digit')) {
+		const digit = Number(button.textContent);
+		button.addEventListener('click', () => {
+			nextOrderNumber.appendDigit(digit)
+		});
+	}
+	// Initialize clear button.
+	document.querySelector('.keypad .clear').addEventListener('click', () => {
+		nextOrderNumber.clear();
+	});
+	// Initialize add button.
+	document.querySelector('.keypad .add').addEventListener('click', () => {
+		const orderNumber = nextOrderNumber.get_and_increment();
+		// Add order, if valid.
+		if (orderNumber != null) {
+			addOrder(orderNumber);
+		}
+	});
+}
+
 // Initialize page.
 window.addEventListener('load', async () => {
-	// Enable adding a new pending order.
-	document.querySelector('#add').addEventListener('click', () => {
-		addOrder();
-	});
-
 	// Enable removing all completed orders.
 	document.querySelector('#remove-completed').addEventListener('click', () => {
 		removeCompletedOrders();
@@ -158,4 +177,6 @@ window.addEventListener('load', async () => {
 
 	const nextOrderNumberElement = document.querySelector('#next-order-number');
 	nextOrderNumber = new NextOrderNumber(nextOrderNumberElement);
+
+	initializeKeypad();
 });

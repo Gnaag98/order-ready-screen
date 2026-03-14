@@ -16,13 +16,28 @@
 <body>
 	<h1>Back</h1>
 
-	<button id="add" type="button">Add</button>
-
 	<section>
 		<h2>Pending</h2>
 		<ul id="pending-orders"></ul>
 
-		<output id="next-order-number"></output>
+		<output id="next-order-number" for="
+			keypad-0 keypad-1 keypad-2 keypad-3 keypad-4 keypad-5 keypad-6
+			keypad-7 keypad-8 keypad-9 keypad-clear keypad-add">
+		</output>
+		<div class="keypad">
+			<button id="keypad-1" class="digit" type="button">1</button>
+			<button id="keypad-2" class="digit" type="button">2</button>
+			<button id="keypad-3" class="digit" type="button">3</button>
+			<button id="keypad-4" class="digit" type="button">4</button>
+			<button id="keypad-5" class="digit" type="button">5</button>
+			<button id="keypad-6" class="digit" type="button">6</button>
+			<button id="keypad-7" class="digit" type="button">7</button>
+			<button id="keypad-8" class="digit" type="button">8</button>
+			<button id="keypad-9" class="digit" type="button">9</button>
+			<button id="keypad-clear" class="clear" type="button">CLEAR</button>
+			<button id="keypad-0" class="digit" type="button">0</button>
+			<button id="keypad-add" class="add" type="button">ADD</button>
+		</div>
 	</section>
 	<section>
 		<h2>Ready</h2>
