@@ -1,4 +1,5 @@
 import { redrawPendingOrders, redrawCompletedOrders } from './common.js'
+import { NextOrderNumber } from './next_order_number.js';
 
 const HttpStatus = {
 	OK: 200,
@@ -6,127 +7,117 @@ const HttpStatus = {
 	NOT_FOUND: 404
 }
 
-let nextAvailableOrderNumber = 0;
+/** @type {NextOrderNumber} */
+let nextOrderNumber;
 
 /** Fetches all orders from the servers. */
-function getOrders() {
-	window.fetch('/orders')
-	.then(response => handleResponse(response))
-	.catch(error => console.error(error));
+async function getOrders() {
+	const response = await window.fetch('/orders');
+	await handleResponse(response);
 }
 
-/** Add pending order. */
-function addOrder() {
+/** Add pending order and increment the next order number. */
+async function addOrder() {
+	const orderNumber = nextOrderNumber.get_and_increment();
 	const url = '/add';
 	const method = 'POST';
-	window.fetch(url, {
+	const response = await window.fetch(url, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ 'order_number': nextAvailableOrderNumber++ })
-	})
-	.then(response => {
-		switch (response.status) {
-		case HttpStatus.OK:
-			return handleResponse(response);
-		default:
-			throw new Error(
-				`Status ${response.status} not implemented for ${method} ${url}`
-			);
-		}
-	})
-	.catch(error => console.error(error));
+		body: JSON.stringify({ 'order_number': orderNumber })
+	});
+	switch (response.status) {
+	case HttpStatus.OK:
+		await handleResponse(response);
+		break;
+	default:
+		throw new Error(
+			`Status ${response.status} not implemented for ${method} ${url}`
+		);
+	}
 }
 
 /** Complete pending order.
  * @param {Number} orderId
  */
-function completeOrder(orderId) {
+async function completeOrder(orderId) {
 	const url = '/complete';
 	const method = 'POST';
-	window.fetch(url, {
+	const response = await window.fetch(url, {
 		method: method,
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ 'order_id': orderId })
-	})
-	.then(response => {
-		switch (response.status) {
-		case HttpStatus.OK:
-			return handleResponse(response);
-		case HttpStatus.NOT_FOUND:
-			throw new Error(
-				`Server found no order with id ${orderId} to complete`
-			);
-		default:
-			throw new Error(
-				`Status ${response.status} not implemented for ${method} ${url}`
-			);
-		}
-	})
-	.catch(error => console.error(error));
+	});
+	switch (response.status) {
+	case HttpStatus.OK:
+		await handleResponse(response);
+		break;
+	case HttpStatus.NOT_FOUND:
+		throw new Error(
+			`Server found no order with id ${orderId} to complete`
+		);
+	default:
+		throw new Error(
+			`Status ${response.status} not implemented for ${method} ${url}`
+		);
+	}
 }
 
 /** Changes the status of an order from completed back to pending.
  * @param {Number} orderId
  */
-function redoOrder(orderId) {
+async function redoOrder(orderId) {
 	const url = '/redo';
 	const method = 'POST';
-	window.fetch(url, {
+	const response = await window.fetch(url, {
 		method: method,
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ 'order_id': orderId })
-	})
-	.then(response => {
-		switch (response.status) {
-		case HttpStatus.OK:
-			return handleResponse(response);
-		case HttpStatus.NOT_FOUND:
-			throw new Error(
-				`Server found no order with id ${orderId} to redo`
-			);
-		default:
-			throw new Error(
-				`Status ${response.status} not implemented for ${method} ${url}`
-			);
-		}
-	})
-	.catch(error => console.error(error));
+	});
+	switch (response.status) {
+	case HttpStatus.OK:
+		await handleResponse(response);
+		break;
+	case HttpStatus.NOT_FOUND:
+		throw new Error(
+			`Server found no order with id ${orderId} to redo`
+		);
+	default:
+		throw new Error(
+			`Status ${response.status} not implemented for ${method} ${url}`
+		);
+	}
 }
 
 /** Removes all completed orders. */
-function removeCompletedOrders() {
+async function removeCompletedOrders() {
 	const url = '/completed-orders'
 	const method = 'DELETE';
-	window.fetch(url, { method: method })
-	.then(response => {
-		switch (response.status) {
-		case HttpStatus.OK:
-			return handleResponse(response);
-			case HttpStatus.NO_CONTENT:
-			// Do nothing since nothing was removed.
-			break;
-		default:
-			throw new Error(
-				`Status ${response.status} not implemented for ${method} ${url}`
-			);
-		}
-	})
-	.catch(error => console.error(error));
+	const response = await window.fetch(url, { method: method });
+	switch (response.status) {
+	case HttpStatus.OK:
+		await handleResponse(response);
+		break;
+	case HttpStatus.NO_CONTENT:
+		// Do nothing since nothing was removed.
+		break;
+	default:
+		throw new Error(
+			`Status ${response.status} not implemented for ${method} ${url}`
+		);
+	}
 }
 
 /** Redraws returned orders and sets the next order number.
  * @param {Response} response - HTTP response.
- * @returns {Promise<void>}
  */
-function handleResponse(response) {
-	return response.json()
-	.then(json => {
-		const pendingOrders = json['pending_orders'];
-		const completedOrders = json['completed_orders'];
-		redrawPendingOrders(pendingOrders);
-		redrawCompletedOrders(completedOrders);
-		makeOrdersInteractive();
-	});
+async function handleResponse(response) {
+	const json = await response.json();
+	const pendingOrders = json['pending_orders'];
+	const completedOrders = json['completed_orders'];
+	redrawPendingOrders(pendingOrders);
+	redrawCompletedOrders(completedOrders);
+	makeOrdersInteractive();
 }
 
 /** Adds the ability to click on an order to change its status. */
@@ -151,32 +142,20 @@ function makeOrdersInteractive() {
 	}
 }
 
-/** Sets the next available order number to one higher than the latest order. */
-function setNextAvailableOrderNumber() {
-	const orderElements = document.querySelectorAll('.order');
-	let currentHighestId = -1;
-	for (const orderElement of orderElements) {
-		const id = orderElement.dataset.id;
-		const orderNumber = Number(orderElement.textContent);
-		if (id > currentHighestId) {
-			nextAvailableOrderNumber = orderNumber + 1;
-			currentHighestId = id;
-		}
-	}
-}
+// Initialize page.
+window.addEventListener('load', async () => {
+	// Enable adding a new pending order.
+	document.querySelector('#add').addEventListener('click', () => {
+		addOrder();
+	});
 
-// Initialize orders on load.
-window.addEventListener('load', () => {
-	getOrders();
-	setNextAvailableOrderNumber();
-});
+	// Enable removing all completed orders.
+	document.querySelector('#remove-completed').addEventListener('click', () => {
+		removeCompletedOrders();
+	});
 
-// Enable adding a new pending order.
-document.querySelector('#add').addEventListener('click', () => {
-	addOrder();
-});
+	await getOrders();
 
-// Enable removing all completed orders.
-document.querySelector('#remove-completed').addEventListener('click', () => {
-	removeCompletedOrders();
+	const nextOrderNumberElement = document.querySelector('#next-order-number');
+	nextOrderNumber = new NextOrderNumber(nextOrderNumberElement);
 });
