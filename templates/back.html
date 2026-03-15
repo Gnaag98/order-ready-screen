@@ -6,6 +6,8 @@
 	<title>Back</title>
 
 	<script type="module" src="{{ url_for('static', filename='back.js') }}"></script>
+	<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='back.css') }}">
 
 	<template id="order">
 		<li>
@@ -14,35 +16,40 @@
 	</template>
 </head>
 <body>
-	<h1>Back</h1>
-
-	<section>
-		<h2>Pending</h2>
-		<ul id="pending-orders"></ul>
-
-		<output id="next-order-number" for="
-			keypad-0 keypad-1 keypad-2 keypad-3 keypad-4 keypad-5 keypad-6
-			keypad-7 keypad-8 keypad-9 keypad-clear keypad-add">
-		</output>
-		<div class="keypad">
-			<button id="keypad-1" class="digit" type="button">1</button>
-			<button id="keypad-2" class="digit" type="button">2</button>
-			<button id="keypad-3" class="digit" type="button">3</button>
-			<button id="keypad-4" class="digit" type="button">4</button>
-			<button id="keypad-5" class="digit" type="button">5</button>
-			<button id="keypad-6" class="digit" type="button">6</button>
-			<button id="keypad-7" class="digit" type="button">7</button>
-			<button id="keypad-8" class="digit" type="button">8</button>
-			<button id="keypad-9" class="digit" type="button">9</button>
-			<button id="keypad-clear" class="clear" type="button">CLEAR</button>
-			<button id="keypad-0" class="digit" type="button">0</button>
-			<button id="keypad-add" class="add" type="button">ADD</button>
-		</div>
-	</section>
-	<section>
-		<h2>Ready</h2>
-		<ul id="completed-orders"></ul>
-	</section>
-	<button type="button" id="remove-completed">Remove Completed</button>
+	<main>
+		<section>
+			<h2>Pending</h2>
+			<ul id="pending-orders" class="orders"></ul>
+		</section>
+		<section>
+			<h2>Completed</h2>
+			<ul id="completed-orders" class="orders"></ul>
+			<button type="button" id="remove-completed">Remove completed</button>
+		</section>
+		<section class="editing">
+			<span>
+				<label for="next-order-number">Next:</label>
+				<output id="next-order-number" class="next-order-number"
+					for="keypad-0 keypad-1 keypad-2 keypad-3 keypad-4 keypad-5 keypad-6 keypad-7 keypad-8 keypad-9 keypad-clear keypad-add"
+				></output>
+			</span>
+			<div class="keypad">
+				<div class="keys">
+					<button id="keypad-1" class="digit" type="button">1</button>
+					<button id="keypad-2" class="digit" type="button">2</button>
+					<button id="keypad-3" class="digit" type="button">3</button>
+					<button id="keypad-4" class="digit" type="button">4</button>
+					<button id="keypad-5" class="digit" type="button">5</button>
+					<button id="keypad-6" class="digit" type="button">6</button>
+					<button id="keypad-7" class="digit" type="button">7</button>
+					<button id="keypad-8" class="digit" type="button">8</button>
+					<button id="keypad-9" class="digit" type="button">9</button>
+					<button id="keypad-clear" class="clear" type="button">CLR</button>
+					<button id="keypad-0" class="digit" type="button">0</button>
+					<button id="keypad-add" class="add" type="button">ADD</button>
+				</div>
+			</div>
+		</section>
+	</main>
 </body>
 </html>

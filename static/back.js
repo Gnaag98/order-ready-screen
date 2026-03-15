@@ -146,18 +146,18 @@ function makeOrdersInteractive() {
 /** Initialize keypad. */
 function initializeKeypad() {
 	// Initialize digit buttons.
-	for (const button of document.querySelectorAll('.keypad .digit')) {
+	for (const button of document.querySelectorAll('.keys .digit')) {
 		const digit = Number(button.textContent);
 		button.addEventListener('click', () => {
 			nextOrderNumber.appendDigit(digit)
 		});
 	}
 	// Initialize clear button.
-	document.querySelector('.keypad .clear').addEventListener('click', () => {
+	document.querySelector('.keys .clear').addEventListener('click', () => {
 		nextOrderNumber.clear();
 	});
 	// Initialize add button.
-	document.querySelector('.keypad .add').addEventListener('click', () => {
+	document.querySelector('.keys .add').addEventListener('click', () => {
 		const orderNumber = nextOrderNumber.get_and_increment();
 		// Add order, if valid.
 		if (orderNumber != null) {

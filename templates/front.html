@@ -6,6 +6,8 @@
 	<title>Front</title>
 
 	<script type="module" src="{{ url_for('static', filename='front.js') }}"></script>
+	<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='front.css') }}">
 
 	<template id="order">
 		<li>
@@ -14,15 +16,15 @@
 	</template>
 </head>
 <body>
-	<h1>Front</h1>
-
-	<section>
-		<h2>Pending</h2>
-		<ul id="pending-orders"></ul>
-	</section>
-	<section>
-		<h2>Ready</h2>
-		<ul id="completed-orders"></ul>
-	</section>
+	<main>
+		<section>
+			<h2>Preparing</h2>
+			<ul id="pending-orders" class="orders pending"></ul>
+		</section>
+		<section>
+			<h2>Ready</h2>
+			<ul id="completed-orders" class="orders completed"></ul>
+		</section>
+	</main>
 </body>
 </html>

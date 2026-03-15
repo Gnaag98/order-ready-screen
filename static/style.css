@@ -1,0 +1,60 @@
+/* CSS reset */
+
+*, *::before, *::after {
+	box-sizing: border-box;
+}
+
+* {
+	margin: 0;
+	padding: 0;
+	font: inherit;
+}
+
+body {
+	min-height: 100vh;
+}
+
+/* end CSS reset */
+
+:root {
+	--gap: 0.5rem;
+	--radius: 0.25rem;
+}
+
+body {
+	font-family: sans-serif;
+	font-size: 1.5rem;
+
+	display: flex;
+	flex-direction: column;
+
+	background-color: grey;
+}
+
+main {
+	flex-grow: 1;
+
+	display: grid;
+	gap: var(--gap);
+}
+
+section {
+	background-color: white;
+	padding: var(--gap);
+
+	display: flex;
+	flex-direction: column;
+	gap: var(--gap);
+}
+
+.orders {
+	flex-grow: 1;
+
+	list-style: none;
+	display: grid;
+	align-content: start;
+	justify-content: space-between;
+	gap: var(--gap);
+}
+
+/* TODO: Handle overflow with many orders. */

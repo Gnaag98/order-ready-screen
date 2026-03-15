@@ -1,0 +1,34 @@
+:root {
+	--gap: 1rem;
+}
+
+body {
+	font-size: 4rem;
+}
+
+main {
+	grid-template-columns: 1fr 1fr;
+}
+
+.orders {
+	grid-template-columns: repeat(auto-fill, 2.5ch);
+
+	&.pending {
+		font-size: 0.75em;
+	}
+
+	&.completed {
+		font-size: 1.5em;
+		gap: 2rem;
+	}
+}
+
+.order {
+	display: block;
+	text-align: center;
+	height: 1.5em;
+	line-height: 1.5em;
+	border-radius: var(--radius);
+	background-color: #ddd;
+	outline: 1px solid #bbb;
+}
