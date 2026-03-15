@@ -42,6 +42,29 @@ def get_orders():
 	"""Returns a list of pending and completed orders."""
 	return get_common_response()
 
+@app.delete('/order/<int:order_id>')
+def remove_order(order_id):
+	"""Removes the order specified by id."""
+
+	print('before:', pending_orders, completed_orders)
+
+	removed_id = None
+	print(removed_id)
+	# Try to remove a pending order.
+	removed_id = pending_orders.pop(order_id, None)
+	print(removed_id)
+	# Try to remove a completed order if no pending order was removed.
+	if removed_id is None:
+		removed_id = completed_orders.pop(order_id, None)
+	print(removed_id)
+
+	print('after:', pending_orders, completed_orders)
+	if removed_id is not None:
+		return get_common_response()
+	else:
+		# No action needed by the client since nothing was removed.
+		return '', HTTP_STATUS_NO_CONTENT
+
 
 @app.delete('/completed-orders')
 def remove_completed_orders():

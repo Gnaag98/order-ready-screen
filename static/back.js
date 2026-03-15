@@ -1,4 +1,7 @@
-import { redrawPendingOrders, redrawCompletedOrders } from './common.js'
+// Used for drag-and-drop using interact().
+import './node_modules/interactjs/dist/interact.min.js';
+
+import { redrawPendingOrders, redrawCompletedOrders } from './common.js';
 import { NextOrderNumber } from './next_order_number.js';
 
 const HttpStatus = {
@@ -6,6 +9,9 @@ const HttpStatus = {
 	NO_CONTENT: 204,
 	NOT_FOUND: 404
 }
+
+// Position used during drag events to reposition the dragged element.
+const drag_position = { x: 0, y: 0 }
 
 /** @type {NextOrderNumber} */
 let nextOrderNumber;
@@ -90,6 +96,27 @@ async function redoOrder(orderId) {
 	}
 }
 
+/** Removes an order specified by id.
+ * @param {Number} orderId
+ */
+async function removeOrder(orderId) {
+	const url = `/order/${orderId}`
+	const method = 'DELETE';
+	const response = await window.fetch(url, { method: method });
+	switch (response.status) {
+	case HttpStatus.OK:
+		await handleResponse(response);
+		break;
+	case HttpStatus.NO_CONTENT:
+		// Do nothing since nothing was removed.
+		break;
+	default:
+		throw new Error(
+			`Status ${response.status} not implemented for ${method} ${url}`
+		);
+	}
+}
+
 /** Removes all completed orders. */
 async function removeCompletedOrders() {
 	const url = '/completed-orders'
@@ -128,8 +155,11 @@ function makeOrdersInteractive() {
 	);
 	for (const orderElement of pendingOrderElements) {
 		orderElement.addEventListener('click', () => {
-			const orderId = Number(orderElement.dataset.id);
-			completeOrder(orderId);
+			// Prevent click if element was just dragged.
+			if (orderElement.dataset.dragged !== "true") {
+				const orderId = Number(orderElement.dataset.id);
+				completeOrder(orderId);
+			}
 		});
 	}
 	const completedOrderElements = document.querySelectorAll(
@@ -137,8 +167,10 @@ function makeOrdersInteractive() {
 	);
 	for (const orderElement of completedOrderElements) {
 		orderElement.addEventListener('click', () => {
-			const orderId = Number(orderElement.dataset.id);
-			redoOrder(orderId);
+			if (orderElement.dataset.dragged !== "true") {
+				const orderId = Number(orderElement.dataset.id);
+				redoOrder(orderId);
+			}
 		});
 	}
 }
@@ -179,4 +211,61 @@ window.addEventListener('load', async () => {
 	nextOrderNumber = new NextOrderNumber(nextOrderNumberElement);
 
 	initializeKeypad();
+
+	interact('.draggable').draggable({
+		listeners: {
+			start (event) {
+				event.target.dataset.dragged="true";
+			},
+			move (event) {
+				drag_position.x += event.dx;
+				drag_position.y += event.dy;
+				event.target.style.transform =
+					`translate(${drag_position.x}px, ${drag_position.y}px)`;
+			},
+			end (event) {
+				drag_position.x = 0;
+				drag_position.y = 0;
+				event.target.style.transform =
+					`translate(${drag_position.x}px, ${drag_position.y}px)`;
+
+				// Delay deactivating dragging status to prevent click event.
+				setTimeout(() => event.target.dataset.dragged="false", 100);
+			}
+		}
+	});
+
+	interact('#drop-zone').dropzone({
+		ondragenter: function (event) {
+			// Highlight drop zone.
+			const dropZoneElement = event.target;
+			dropZoneElement.classList.add('hover');
+			// Backup text content before modifying.
+			const textElement = dropZoneElement.querySelector('p');
+			textElement.dataset.text = textElement.textContent;
+			textElement.textContent = 'Remove order';
+		},
+		ondragleave: function (event) {
+			// Stop highlighting drop zone.
+			const dropZoneElement = event.target;
+			dropZoneElement.classList.remove('hover');
+			// Reset text content.
+			const textElement = dropZoneElement.querySelector('p');
+			textElement.textContent = textElement.dataset.text;
+		},
+		ondrop: function (event) {
+			const orderElement = event.relatedTarget;
+			// Hide order to prevent order reappearing where if was picked.
+			orderElement.style.visibility = 'hidden';
+			// Remove order.
+			const orderId = Number(orderElement.dataset.id);
+			removeOrder(orderId);
+			// Stop highlighting drop zone.
+			const dropZoneElement = event.target;
+			dropZoneElement.classList.remove('hover');
+			// Reset text content.
+			const textElement = dropZoneElement.querySelector('p');
+			textElement.textContent = textElement.dataset.text;
+		}
+	})
 });

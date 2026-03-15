@@ -11,7 +11,7 @@
 
 	<template id="order">
 		<li>
-			<button class="order" type="button"></button>
+			<button class="order draggable" type="button"></button>
 		</li>
 	</template>
 </head>
@@ -24,7 +24,9 @@
 		<section>
 			<h2>Completed</h2>
 			<ul id="completed-orders" class="orders"></ul>
-			<button type="button" id="remove-completed">Remove completed</button>
+			<div>
+				<button type="button" id="remove-completed" class="remove-completed">Remove completed</button>
+			</div>
 		</section>
 		<section class="editing">
 			<span>
@@ -48,6 +50,11 @@
 					<button id="keypad-0" class="digit" type="button">0</button>
 					<button id="keypad-add" class="add" type="button">ADD</button>
 				</div>
+			</div>
+		</section>
+		<section>
+			<div id="drop-zone" class="drop-zone">
+				<p>Drop order here to remove</p>
 			</div>
 		</section>
 	</main>

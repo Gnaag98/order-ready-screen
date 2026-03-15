@@ -13,6 +13,12 @@ main {
 	height: 2em;
 }
 
+.remove-completed {
+	display: block;
+	margin-inline: auto;
+	padding-inline: 0.25em;
+}
+
 .editing {
 	display: flex;
 	gap: var(--gap);
@@ -49,4 +55,27 @@ span:has(label):has(input, output) {
 
 .digit {
 	font-size: 1.75em;
+}
+
+.draggable {
+	touch-action: none;
+	user-select: none;
+}
+
+.drop-zone {
+	height: 100%;
+	display: grid;
+	place-content: center;
+	border: 2px dashed lightgray;
+	border-radius: 0.5rem;
+	margin: 0.75rem;
+
+	&.hover {
+		background-color: #eee;
+	}
+
+	p {
+		text-align: center;
+		max-width: 14ch;
+	}
 }

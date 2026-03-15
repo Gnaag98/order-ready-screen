@@ -1,4 +1,4 @@
-import { redrawPendingOrders, redrawCompletedOrders } from './common.js'
+import { redrawPendingOrders, redrawCompletedOrders } from './common.js';
 
 /** Fetches list of orders. */
 function getOrders() {
