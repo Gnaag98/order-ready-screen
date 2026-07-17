@@ -14,27 +14,41 @@
 			<button class="order draggable" type="button"></button>
 		</li>
 	</template>
+	<template id="color-section">
+		<ul class="orders" data-color="">
+
+		</ul>
+	</template>
 </head>
 <body>
 	<main>
 		<section>
 			<h2>Pending</h2>
-			<ul id="pending-orders" class="orders"></ul>
+			<div id="pending-orders" class="orders-container"></div>
 		</section>
 		<section>
 			<h2>Completed</h2>
-			<ul id="completed-orders" class="orders"></ul>
+			<div id="completed-orders" class="orders-container"></div>
 			<div>
 				<button type="button" id="remove-completed" class="remove-completed">Remove completed</button>
 			</div>
 		</section>
-		<section class="editing">
-			<span>
-				<label for="next-order-number">Next:</label>
-				<output id="next-order-number" class="next-order-number"
-					for="keypad-0 keypad-1 keypad-2 keypad-3 keypad-4 keypad-5 keypad-6 keypad-7 keypad-8 keypad-9 keypad-clear keypad-add"
-				></output>
-			</span>
+		<section>
+			<div class="toolbar">
+				<div class="colors">
+					<p>Color:</p>
+					<button class="color active" data-color="0" type="button"></button>
+					<button class="color" data-color="1" type="button"></button>
+					<button class="color" data-color="2" type="button"></button>
+					<button class="color" data-color="3" type="button"></button>
+				</div>
+				<span>
+					<label for="next-order-number">Next:</label>
+					<output id="next-order-number" class="next-order-number"
+						for="keypad-0 keypad-1 keypad-2 keypad-3 keypad-4 keypad-5 keypad-6 keypad-7 keypad-8 keypad-9 keypad-clear keypad-add"
+					></output>
+				</span>
+			</div>
 			<div class="keypad">
 				<div class="keys">
 					<button id="keypad-1" class="digit" type="button">1</button>

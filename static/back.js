@@ -24,14 +24,17 @@ async function getOrders() {
 
 /** Add pending order.
  * @param {Number} orderNumber
+ * @param {Number} orderColor
  */
-async function addOrder(orderNumber) {
+async function addOrder(orderNumber, orderColor) {
 	const url = '/add';
 	const method = 'POST';
 	const response = await window.fetch(url, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ 'order_number': orderNumber })
+		body: JSON.stringify({
+			'order_number': orderNumber, 'order_color': orderColor
+		})
 	});
 	switch (response.status) {
 	case HttpStatus.OK:
@@ -175,6 +178,58 @@ function makeOrdersInteractive() {
 	}
 }
 
+/** Initialize buttons to select order color. */
+function initializeColorButtons() {
+	for (const button of document.querySelectorAll('.color')) {
+		button.addEventListener('click', () => {
+			const active = document.querySelector('.color.active');
+			active.classList.remove('active');
+			button.classList.add('active');
+			// Swap to the numbering of the new color.
+			const color = Number(button.dataset.color);
+			const orderElements = document.querySelectorAll(
+				`#pending-orders .orders[data-color="${color}"] .order`
+			);
+			if (orderElements.length > 0) {
+				let latestOrderElement = orderElements[0];
+				for (const orderElement of orderElements) {
+					if (Number(orderElement.dataset.id) > Number(latestOrderElement.dataset.id)) {
+						latestOrderElement = orderElement;
+					}
+				}
+				const latestOrderNumber = Number(latestOrderElement.textContent);
+				// TODO: Use a NextOrderNumber instance per color, since this
+				// will stop working when orders are completed.
+				nextOrderNumber.set(latestOrderNumber + 1);
+			} else {
+				nextOrderNumber.clear();
+			}
+		});
+	}
+}
+
+/** Creates sections to sort orders by color into. */
+function createColorSections() {
+	const sectionTemplate = document.querySelector('#color-section');
+	const colorElements = document.querySelectorAll('.color');
+	for (const orderStatus of ['pending', 'completed']) {
+		const ordersElement = document.querySelector(`#${orderStatus}-orders`);
+		// Add section per color.
+		for (const colorElement of colorElements) {
+			const orderClone = document.importNode(sectionTemplate.content, true);
+			const listElement = orderClone.querySelector('ul');
+			listElement.dataset.color = colorElement.dataset.color;
+			ordersElement.appendChild(listElement);
+		}
+	}
+}
+
+/** Initialize order coloring. */
+function initializeColors() {
+	initializeColorButtons();
+	createColorSections();
+}
+
 /** Initialize keypad. */
 function initializeKeypad() {
 	// Initialize digit buttons.
@@ -193,7 +248,9 @@ function initializeKeypad() {
 		const orderNumber = nextOrderNumber.get_and_increment();
 		// Add order, if valid.
 		if (orderNumber != null) {
-			addOrder(orderNumber);
+			const colorElement = document.querySelector('.color.active');
+			const orderColor = Number(colorElement.dataset.color);
+			addOrder(orderNumber, orderColor);
 		}
 	});
 }
@@ -205,12 +262,13 @@ window.addEventListener('load', async () => {
 		removeCompletedOrders();
 	});
 
+	initializeColors();
+	initializeKeypad();
+
 	await getOrders();
 
 	const nextOrderNumberElement = document.querySelector('#next-order-number');
 	nextOrderNumber = new NextOrderNumber(nextOrderNumberElement);
-
-	initializeKeypad();
 
 	interact('.draggable').draggable({
 		listeners: {

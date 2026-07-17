@@ -14,16 +14,21 @@
 			<span class="order"></span>
 		</li>
 	</template>
+	<template id="color-section">
+		<ul class="orders" data-color="">
+
+		</ul>
+	</template>
 </head>
 <body>
 	<main>
 		<section>
 			<h2>Preparing</h2>
-			<ul id="pending-orders" class="orders pending"></ul>
+			<div id="pending-orders" class="orders-container pending"></div>
 		</section>
 		<section>
 			<h2>Ready</h2>
-			<ul id="completed-orders" class="orders completed"></ul>
+			<div id="completed-orders" class="orders-container completed"></div>
 		</section>
 	</main>
 </body>

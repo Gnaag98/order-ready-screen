@@ -1,13 +1,22 @@
+from dataclasses import dataclass
+
 from flask import Flask, render_template, request
 
-app = Flask(__name__)
+
+@dataclass
+class Order:
+	number: int
+	color: int
+
 
 HTTP_STATUS_NO_CONTENT = 204
 HTTP_STATUS_NOT_FOUND = 404
 
+app = Flask(__name__)
+
 # Order IDs are used as keys to allow for duplicate order numbers.
-pending_orders: dict[int, int] = {}
-completed_orders: dict[int, int] = {}
+pending_orders: dict[int, Order] = {}
+completed_orders: dict[int, Order] = {}
 next_available_order_id: int = 0
 
 
@@ -84,7 +93,9 @@ def add_order():
 	order_id = next_available_order_id
 	next_available_order_id += 1
 	order_number = int(request.json['order_number'])
-	pending_orders[order_id] = order_number
+	order_color = int(request.json['order_color'])
+	order = Order(order_number, order_color)
+	pending_orders[order_id] = order
 	return get_common_response()
 
 
@@ -93,9 +104,9 @@ def complete_order():
 	"""Moves the order with matching id from pending to completed."""
 	order_id = int(request.json['order_id'])
 	if order_id in pending_orders:
-		order_number = pending_orders[order_id]
+		order = pending_orders[order_id]
 		del pending_orders[order_id]
-		completed_orders[order_id] = order_number
+		completed_orders[order_id] = order
 		return get_common_response()
 	else:
 		return (
@@ -108,9 +119,9 @@ def redo_order():
 	"""Moves the order with matching id from completed to pending."""
 	order_id = int(request.json['order_id'])
 	if order_id in completed_orders:
-		order_number = completed_orders[order_id]
+		order = completed_orders[order_id]
 		del completed_orders[order_id]
-		pending_orders[order_id] = order_number
+		pending_orders[order_id] = order
 		return get_common_response()
 	else:
 		return (

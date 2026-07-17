@@ -11,6 +11,9 @@ main {
 	display: block;
 	width: 100%;
 	height: 2em;
+	outline: 1px solid gray;
+	border-radius: var(--radius);
+	border: none;
 }
 
 .remove-completed {
@@ -19,9 +22,31 @@ main {
 	padding-inline: 0.25em;
 }
 
-.editing {
+.toolbar {
 	display: flex;
 	gap: var(--gap);
+}
+
+.colors {
+	display: flex;
+	gap: var(--gap);
+}
+
+.color {
+	/* width: 2ch; */
+	aspect-ratio: 1/1;
+	height: 100%;
+	outline: 1px solid gray;
+	border-radius: var(--radius);
+	border: none;
+	background-color: hsl(from var(--order-color) h 50 l);
+}
+
+.color.active {
+	background-color: var(--order-color);
+}
+.color.active::after {
+	content: "\2713";
 }
 
 .keypad {
@@ -42,7 +67,7 @@ span:has(label):has(input, output) {
 	box-sizing: content-box;
 	width: 2ch;
 	padding-inline: 0.25em;
-	outline: 1px solid black;
+	outline: 1px solid gray;
 	border-radius: var(--radius);
 }
 

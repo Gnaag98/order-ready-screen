@@ -29,6 +29,5 @@ main {
 	height: 1.5em;
 	line-height: 1.5em;
 	border-radius: var(--radius);
-	background-color: #ddd;
 	outline: 1px solid #bbb;
 }

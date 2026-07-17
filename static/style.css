@@ -21,6 +21,22 @@ body {
 	--radius: 0.25rem;
 }
 
+[data-color='0'] {
+	--order-color: cyan;
+}
+
+[data-color='1'] {
+	--order-color: magenta;
+}
+
+[data-color='2'] {
+	--order-color: yellow;
+}
+
+[data-color='3'] {
+	--order-color: green;
+}
+
 body {
 	font-family: sans-serif;
 	font-size: 1.5rem;
@@ -47,14 +63,24 @@ section {
 	gap: var(--gap);
 }
 
-.orders {
+.orders-container {
 	flex-grow: 1;
 
+	display: flex;
+	flex-direction: column;
+	gap: var(--gap);
+}
+
+.orders {
 	list-style: none;
 	display: grid;
 	align-content: start;
 	justify-content: space-between;
 	gap: var(--gap);
+}
+
+.order {
+	background-color: var(--order-color);
 }
 
 /* TODO: Handle overflow with many orders. */
