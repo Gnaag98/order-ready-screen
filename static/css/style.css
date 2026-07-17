@@ -73,9 +73,9 @@ section {
 
 .orders {
 	list-style: none;
+
 	display: grid;
-	align-content: start;
-	justify-content: space-between;
+	justify-content: start;
 	gap: var(--gap);
 }
 

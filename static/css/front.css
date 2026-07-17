@@ -1,0 +1,48 @@
+:root {
+	--gap: 1rem;
+}
+
+body {
+	font-size: 4rem;
+}
+
+main {
+	display: grid;
+	grid-template-columns: 2fr 3fr;
+	gap: var(--gap);
+}
+
+.orders-container {
+	&.pending {
+		font-size: 0.52em;
+	}
+
+	&.completed {
+		font-size: 1.05em;
+	}
+}
+
+.orders {
+	grid-template-columns: repeat(auto-fill, 2.5ch);
+	grid-auto-rows: 1.25em;
+}
+
+.order {
+	display: block;
+	text-align: center;
+	align-content: center;
+	height: 100%;
+	border-radius: var(--radius);
+	outline: 1px solid #bbb;
+}
+
+.order-container:first-child {
+	grid-column: span 2;
+	grid-row: span 2;
+	font-size: 2em;
+}
+
+.hidden-order-count {
+	align-content: center;
+	grid-column: span 2;
+}

@@ -5,14 +5,17 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Front</title>
 
-	<script type="module" src="{{ url_for('static', filename='front.js') }}"></script>
-	<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-	<link rel="stylesheet" href="{{ url_for('static', filename='front.css') }}">
+	<script type="module" src="{{ url_for('static', filename='javascript/front.js') }}"></script>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/front.css') }}">
 
 	<template id="order">
-		<li>
+		<li class="order-container">
 			<span class="order"></span>
 		</li>
+	</template>
+	<template id="hidden-order-count">
+		<span class="hidden-order-count"></span>
 	</template>
 	<template id="color-section">
 		<ul class="orders" data-color="">

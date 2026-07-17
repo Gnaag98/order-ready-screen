@@ -1,7 +1,6 @@
 // Used for drag-and-drop using interact().
-import './node_modules/interactjs/dist/interact.min.js';
+import '../node_modules/interactjs/dist/interact.min.js';
 
-import { redrawPendingOrders, redrawCompletedOrders } from './common.js';
 import { NextOrderNumber } from './next_order_number.js';
 
 const HttpStatus = {
@@ -139,6 +138,31 @@ async function removeCompletedOrders() {
 	}
 }
 
+/** Redraws visual of either pending or completed orders.
+ * @param {Object.<number, Object.<string, Number>>} orders - either pending or completed orders.
+ * @param {string} orderStatus - either 'pending' or 'completed'.
+ */
+function redrawOrders(orders, orderStatus) {
+	const ordersElement = document.querySelector(`#${orderStatus}-orders`);
+	const orderTemplate = document.querySelector('#order');
+	// Clear lists.
+	for (const listElement of ordersElement.querySelectorAll('.orders')) {
+		listElement.textContent = '';
+	}
+	// Repopulate list.
+	for (const [id, order] of Object.entries(orders)) {
+		const number = order.number;
+		const color = order.color;
+		const listElement = ordersElement.querySelector(`[data-color="${color}"`);
+		const orderClone = document.importNode(orderTemplate.content, true);
+		const orderElement = orderClone.querySelector('.order');
+		orderElement.dataset.id = id;
+		orderElement.dataset.status = orderStatus;
+		orderElement.textContent = number;
+		listElement.appendChild(orderClone);
+	}
+}
+
 /** Redraws returned orders and sets the next order number.
  * @param {Response} response - HTTP response.
  */
@@ -146,8 +170,8 @@ async function handleResponse(response) {
 	const json = await response.json();
 	const pendingOrders = json['pending_orders'];
 	const completedOrders = json['completed_orders'];
-	redrawPendingOrders(pendingOrders);
-	redrawCompletedOrders(completedOrders);
+	redrawOrders(pendingOrders, 'pending');
+	redrawOrders(completedOrders, 'completed');
 	makeOrdersInteractive();
 }
 
