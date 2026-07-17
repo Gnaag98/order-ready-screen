@@ -1,6 +1,23 @@
-main {
-	grid-template-columns: 3fr 2fr;
-	grid-auto-rows: 1fr auto;
+.top {
+	flex-grow: 1;
+
+	display: flex;
+	flex-direction: column;
+	gap: var(--gap);
+}
+
+.pending-section {
+	flex-grow: 1;
+}
+
+.completed-header {
+	display: flex;
+	justify-content: space-between;
+}
+
+.remove-completed {
+	display: block;
+	padding-inline: 0.25em;
 }
 
 .orders {
@@ -16,10 +33,11 @@ main {
 	border: none;
 }
 
-.remove-completed {
-	display: block;
-	margin-inline: auto;
-	padding-inline: 0.25em;
+.bottom {
+	display: grid;
+	grid-template-columns: 3fr 2fr;
+	grid-auto-rows: 1fr auto;
+	gap: var(--gap);
 }
 
 .toolbar {

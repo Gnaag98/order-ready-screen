@@ -22,55 +22,61 @@
 </head>
 <body>
 	<main>
-		<section>
-			<h2>Pending</h2>
-			<div id="pending-orders" class="orders-container"></div>
-		</section>
-		<section>
-			<h2>Completed</h2>
-			<div id="completed-orders" class="orders-container"></div>
-			<div>
-				<button type="button" id="remove-completed" class="remove-completed">Remove completed</button>
-			</div>
-		</section>
-		<section>
-			<div class="toolbar">
-				<div class="colors">
-					<p>Color:</p>
-					<button class="color active" data-color="0" type="button"></button>
-					<button class="color" data-color="1" type="button"></button>
-					<button class="color" data-color="2" type="button"></button>
-					<button class="color" data-color="3" type="button"></button>
+		<div class="top">
+			<section class="pending-section">
+				<h2>Pending</h2>
+				<div id="pending-orders" class="orders-container"></div>
+			</section>
+			<section>
+				<header class="completed-header">
+					<h2>Completed</h2>
+					<button type="button" id="remove-completed" class="remove-completed">
+						Remove all completed
+					</button>
+				</header>
+				<div id="completed-orders" class="orders-container"></div>
+			</section>
+		</div>
+		<div class="bottom">
+			<section>
+				<div class="toolbar">
+					<div class="colors">
+						<p>Color:</p>
+						<button class="color active" data-color="0" type="button"></button>
+						<button class="color" data-color="1" type="button"></button>
+						<button class="color" data-color="2" type="button"></button>
+						<button class="color" data-color="3" type="button"></button>
+					</div>
+					<span>
+						<label for="next-order-number">Next:</label>
+						<output id="next-order-number" class="next-order-number"
+							for="keypad-0 keypad-1 keypad-2 keypad-3 keypad-4 keypad-5 keypad-6 keypad-7 keypad-8 keypad-9 keypad-clear keypad-add"
+						></output>
+					</span>
 				</div>
-				<span>
-					<label for="next-order-number">Next:</label>
-					<output id="next-order-number" class="next-order-number"
-						for="keypad-0 keypad-1 keypad-2 keypad-3 keypad-4 keypad-5 keypad-6 keypad-7 keypad-8 keypad-9 keypad-clear keypad-add"
-					></output>
-				</span>
-			</div>
-			<div class="keypad">
-				<div class="keys">
-					<button id="keypad-1" class="digit" type="button">1</button>
-					<button id="keypad-2" class="digit" type="button">2</button>
-					<button id="keypad-3" class="digit" type="button">3</button>
-					<button id="keypad-4" class="digit" type="button">4</button>
-					<button id="keypad-5" class="digit" type="button">5</button>
-					<button id="keypad-6" class="digit" type="button">6</button>
-					<button id="keypad-7" class="digit" type="button">7</button>
-					<button id="keypad-8" class="digit" type="button">8</button>
-					<button id="keypad-9" class="digit" type="button">9</button>
-					<button id="keypad-clear" class="clear" type="button">CLR</button>
-					<button id="keypad-0" class="digit" type="button">0</button>
-					<button id="keypad-add" class="add" type="button">ADD</button>
+				<div class="keypad">
+					<div class="keys">
+						<button id="keypad-1" class="digit" type="button">1</button>
+						<button id="keypad-2" class="digit" type="button">2</button>
+						<button id="keypad-3" class="digit" type="button">3</button>
+						<button id="keypad-4" class="digit" type="button">4</button>
+						<button id="keypad-5" class="digit" type="button">5</button>
+						<button id="keypad-6" class="digit" type="button">6</button>
+						<button id="keypad-7" class="digit" type="button">7</button>
+						<button id="keypad-8" class="digit" type="button">8</button>
+						<button id="keypad-9" class="digit" type="button">9</button>
+						<button id="keypad-clear" class="clear" type="button">CLR</button>
+						<button id="keypad-0" class="digit" type="button">0</button>
+						<button id="keypad-add" class="add" type="button">ADD</button>
+					</div>
 				</div>
-			</div>
-		</section>
-		<section>
-			<div id="drop-zone" class="drop-zone">
-				<p>Drop order here to remove</p>
-			</div>
-		</section>
+			</section>
+			<section>
+				<div id="drop-zone" class="drop-zone">
+					<p>Drop order here to remove</p>
+				</div>
+			</section>
+		</div>
 	</main>
 </body>
 </html>
